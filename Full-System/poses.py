@@ -2,8 +2,6 @@ import math
 
 import numpy as np
 
-from rmlib.rmtools import utils
-
 
 def pose_vec_to_mtrx(vec):
     """
@@ -514,29 +512,6 @@ def orient_err_R(Rmeasure, Rdesired):
     # NOTE: This function assumes that 'Rmeasure' and 'Rdesired' are properly-formed rotation matrices
     # NOTE: Returns an error vector with all 3 rotation components
     return orientation_error(rotMatx_to_quat(Rmeasure), rotMatx_to_quat(Rdesired))
-
-
-def pose_components(pose):
-    """Break the pose down into it's constituent parts and return as a dictionary"""
-    return {
-        "position": pose[0:3, 3],
-        "rotation": pose[0:3, 0:3],
-        "xBasis": utils.vec_unit(np.array(pose[0:3, 0])),
-        "yBasis": utils.vec_unit(np.array(pose[0:3, 1])),
-        "zBasis": utils.vec_unit(np.array(pose[0:3, 2])),
-    }
-
-
-def orient_error_between_poses(pose_1, pose_2, scalar=True):
-    """Error between pose orientations (R) from Siciliano et al."""
-    # NOTE: `scalar` flag returns the max error about any axis, otherwise return an error vector with all 3 rotation components
-    err = orient_err_R(
-        pose_components(pose_1)["rotation"], pose_components(pose_2)["rotation"]
-    )
-    if scalar:
-        return max(err)
-    else:
-        return err
 
 
 def combine_rot_and_trans_from_poses(rot_pose=None, trans_pose=None):
