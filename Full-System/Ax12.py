@@ -66,7 +66,7 @@ class Ax12:
 
     PROTOCOL_VERSION = 1.0
     BAUDRATE = 1_000_000  # Dynamixel default baudrate
-    DEVICENAME = '/dev/ttyUSB0'  # e.g 'COM3' windows or '/dev/ttyUSB0' for linux
+    DEVICENAME = '/dev/cu.URT0'  # e.g 'COM3' windows or '/dev/ttyUSB0' for linux
     DEBUG = True
 
     def __init__(self, motor_id):
