@@ -6,7 +6,7 @@ The gripper has a palm-mounted Realsense D405 that is used for estimating block 
 
 # Dependencies:
 
-All installation instructions assume use on Linux (Ubuntu). For platform-specific instructions view the instructions associated with each link.
+All installation instructions assume use on Linux (Ubuntu Kernal version 5.15). For platform-specific instructions view the instructions associated with each link.
 
 Universal Robotics Real-Time Data Exchange (RTDE) Interface for Interfacing with UR5 (https://sdurobotics.gitlab.io/ur_rtde/installation/installation.html#quick-install):
 
