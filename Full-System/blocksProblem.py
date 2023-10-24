@@ -1,8 +1,10 @@
 from py2pddl import Domain, create_type, predicate, action, init, goal
-class blocksProblem(blocksDomain):
+import blocksDomain as bd
+
+class blocksProblem(bd.blocksDomain):
     def __init__(self):
         super().__init__()
-        self.objects = blocksDomain.Object.create_objs(
+        self.objects = bd.blocksDomain.Object.create_objs(
             ["redBlock", "yellowBlock", "blueBlock", "loc-a", "loc-b", "loc-c"], prefix="")
 
     @init

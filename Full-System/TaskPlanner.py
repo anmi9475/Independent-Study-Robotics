@@ -1,4 +1,9 @@
 # Task Planner Code Continues
+import blocksProblem as bp
+import os
+import copy
+import numpy as np
+
 class TaskPlanner():
     def __init__(self, blocks):
         self.blocks = blocks
@@ -119,7 +124,7 @@ class TaskPlanner():
     def generatePDDLFiles(self, blocks):
         # generates domain.pddl and problem.pddl files based on the problem object and superclass which specifies domain
         initDict = self.getProblemArguments(blocks)
-        problem = blocksProblem()
+        problem = bp.blocksProblem()
         problem.generate_domain_pddl()
         problem.generate_problem_pddl(
             init={
@@ -134,7 +139,7 @@ class TaskPlanner():
         # precondition: call generatePDDLFiles prior to calling this
         # generates plan based on domain.pddl and problem.pddl using fast downward which is writtent to sas_plan file
         print("<<RUNNING FASTDOWNWARD PLANNER>>")
-        os.system("./downward/fast-downward.py domain.pddl problem.pddl --search 'astar(lmcut())'")
+        os.system("/home/andreamiller/ris/downward/fast-downward.py domain.pddl problem.pddl --search 'astar(lmcut())'")
 
     def parsePlan(self, blocks):
         # precondition: call generatePDDLPlan prior to calling this
@@ -199,12 +204,17 @@ class TaskPlanner():
 
     def generatePlan(self, goalDict):
         # Returns a sequence of positions that blocks should be grasped and then released relative to the current gripper frame
-        '''
-        for block in self.blocks:
-            print(f"{block.name}: {block.worldFrameCoords * 1000}")
-        '''
+   
+        try:
+            for block in self.blocks:
+                print(f"{block.name}: {block.worldFrameCoords * 1000}")
+        except:
+            print("failed here")
+
+        print("we got here")
         self.goalDict = goalDict
         self.generatePDDLFiles(self.blocks)
         self.generatePDDLPlan()
         steps = self.parsePlan(self.blocks)
+        
         return steps
