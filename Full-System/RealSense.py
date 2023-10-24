@@ -1,5 +1,7 @@
 import open3d as o3d
 import numpy as np
+import pyrealsense2 as rs
+import matplotlib.pyplot as plt
 class RealSense():
     def __init__(self, zMax=0.5, voxelSize=0.001):
         self.pinholeIntrinsics = None  # set in self.takeImages()

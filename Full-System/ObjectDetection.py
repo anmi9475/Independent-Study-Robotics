@@ -3,8 +3,9 @@ from PIL import Image
 import numpy as np
 import matplotlib.pyplot as plt
 import cv2
-
-
+import open3d as o3d
+import Block as bl
+import spatialmath as sm
 class ObjectDetection():
     # This class creates a RealSense Object, takes images and returns Open3D point clouds corresponding to blocks
     # Extrinsics of RealSense Object are no longer used here so interfacing with the Realsense could be done outside this class for decoupling
@@ -158,9 +159,9 @@ class ObjectDetection():
 
         # o3d.visualization.draw([redPCD,yellowPCD,bluePCD])
         # o3d.visualization.draw_geometries([redPCD,yellowPCD,bluePCD])
-        redBlock = Block("redBlock", redPCD, urPose)
-        yellowBlock = Block("yellowBlock", yellowPCD, urPose)
-        blueBlock = Block("blueBlock", bluePCD, urPose)
+        redBlock = bl.Block("redBlock", redPCD, urPose)
+        yellowBlock = bl.Block("yellowBlock", yellowPCD, urPose)
+        blueBlock = bl.Block("blueBlock", bluePCD, urPose)
         return (redBlock, yellowBlock, blueBlock)
         # return (redPCD,yellowPCD,bluePCD)
 
