@@ -1,0 +1,103 @@
+import serial.tools.list_ports
+ports = []
+for port in serial.tools.list_ports.comports():
+    ports.append(port.name)
+print(ports)
+
+----------------------------------------------------------------------------------------
+
+# Call this once to intialize serial connections to ur and gripper
+# To list serial ports of the motor interface
+# $ python -m serial.tools.list_ports
+
+
+robotIP = "192.168.0.6"
+con = rtde_control.RTDEControlInterface(robotIP)
+rec = rtde_receive.RTDEReceiveInterface(robotIP)
+
+# original: servoPort = "/dev/ttyACM0"
+# use 'ls /dev' in terminal to find port address being used by dynamixel motor
+servoPort = "/dev/ttyACM0"
+
+# original: gripperController = Motors(servoPort)
+gripperController = Motors(servoPort)
+
+gripperController.torquelimit(600)
+
+---------------------------------------------------------------------------------------
+
+import UR5_Interface as ur
+try:
+    ur = ur.UR5_Interface() #-- commneted out since I changed the class to an import -Jensen
+    ur.c,ur.r,ur.gripperController = con,rec,gripperController
+    ur.testRoutine()
+    
+    
+except Exception as e:
+    raise(e)
+finally:
+    pass
+    # ur.c.disconnect()
+    # ur.r.disconnect()
+
+-------------------------------------------------------------------------------------------
+
+# unable to run last line, ''UR5' object has no attribute 'ikine_LMS' -Andrea
+import RTB_Model as r
+r = r.RTB_Model() #-- commneted out since I changed the class to an import -Jensen
+r.getCameraFrame()
+r.initSwiftEnv()
+r.addSwiftBox([0,0,0.5])
+r.simulateSwiftRobot()
+
+-------------------------------------------------------------------------------------------------
+
+pipe = rs.pipeline()
+config = rs.config()
+profile = pipe.start()
+try:
+  for i in range(0, 100):
+    frames = pipe.wait_for_frames()
+    for f in frames:
+      print(f.profile)
+finally:
+    pipe.stop()
+
+-------------------------------------------------------------------------------------------------
+#Kinematic Model of the Robot in the Robotics Toolbox for Python (RTB) 
+# Not needed but can be helpful for testing
+#import RTB_Model as r
+    
+# robot_model = RTB_Model()
+real = real.RealSense() #-- not need since Imported --Jensen
+real.initConnection()
+# real.getPCD(True)
+# real.extrinsics = np.array(robot_model.getCameraFrame())
+# print(real.extrinsics)
+pcd,rgbdImage = real.getPCD(False)
+depthImage,colorImage = rgbdImage.depth,rgbdImage.color
+real.displayImages(colorImage,depthImage)
+# real.displayPCD(pcd)
+real.pipe.stop()
+
+# o3d.visualization.draw()
+# r.displayStream()
+# finally:
+#     r.pipe.stop()
+# profile = pipe.start(config)
+# depth_sensor = profile.get_device().first_depth_sensor()
+# print(
+# r.displayStream(pipe,config)
+
+----------------------------------------------------------------------------------------------------
+
+import RTB_Model as r
+import RealSense as real
+robot_model = r.RTB_Model()
+real = real.RealSense()
+real.extrinsics = np.array(robot_model.getCameraFrame())
+print(real.extrinsics)
+pcd = o3d.io.read_point_cloud("pcd1.pcd")
+#real.displayPCD(pcd)
+
+---------------------------------------------------------------------------------------------------------
