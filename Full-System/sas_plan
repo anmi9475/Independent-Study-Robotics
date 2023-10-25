@@ -1,2 +1,2 @@
-(move blueblock loc-a yellowblock)
+(move blueblock loc-b yellowblock)
 ; cost = 1 (unit cost)

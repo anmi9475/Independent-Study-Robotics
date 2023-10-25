@@ -15,7 +15,10 @@ class Block():
         self.blockOBB = self.blockPCD.get_oriented_bounding_box()
         self.blockAABB.color, self.blockOBB.color = [0, 0, 0], [0, 0, 0]
         self.urPose = urPose  # Pose of the Nth frame of the UR5 when the image was taken
-        x, y = self.blockAABB.get_center()[0:2]
+        y, x = self.blockAABB.get_center()[0:2]
+        print("before: ", x,y)
+        x = -x
+        print("after: ", x,y)
         # due to convex hull outliers are included when mask is off. Use min bound rather than center
         zMin = self.blockAABB.get_min_bound()[2]
         self.camFrameCoords = np.matrix([x, y, zMin])
