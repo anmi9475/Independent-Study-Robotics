@@ -6,9 +6,7 @@ import RealSense as real
 import ObjectDetection as ob
 import TaskPlanner as tp
 import Block as bl
-
-
-    
+ 
 try:
     robotIP = "192.168.0.6"
     con = rtde_control.RTDEControlInterface(robotIP)

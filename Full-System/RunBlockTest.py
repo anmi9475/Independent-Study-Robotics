@@ -57,7 +57,7 @@ try:
     blocks = detector.getBlocksFromImages(colorImage,depthImage,urPose,display = True)
 
     planner = tp.TaskPlanner(blocks)
-    goalDict = {"on":[("blueBlock","yellowBlock")]}
+    goalDict = {"on":[("blueBlock","yellowBlock"),("redBlock", "yellowBlock")]}
     steps = planner.generatePlan(goalDict)
     print(steps)
     for block in blocks:
@@ -126,11 +126,12 @@ try:
     # ur.openGripper() # Open gripper
     # ur.testRoutine()
     homePose = ur.getPose()
-
+    i = 0
     for step in steps:
         # Grasp and Move Home Step
         grabPos,releasePos = step
-        releasePos[0] = releasePos[0] - 0.03
+        releasePos[1] = releasePos[1] + 0.02 + i
+        releasePos[2] = releasePos[2] + 0.00
         print("This is the releasePos" , releasePos)
         print("This is the GrabPos" , grabPos)
         moveToBlock(grabPos) 
@@ -141,7 +142,7 @@ try:
         moveToBlock(releasePos)
         ur.openGripper()
         moveBackFromBlock(homePose)
-        
+        i = i + .02
     
     
     
