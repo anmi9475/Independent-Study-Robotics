@@ -182,7 +182,7 @@ class TaskPlanner():
                 # move to a block then add block length to position loc's are already adjusted)
                 goalPostion = copy.deepcopy(nameMap[whereToMoveTo])
                 blockLength = 0.02
-                releaseCoords = goalBlock.gripperFrameCoords + goalBlock.getWorldFrameVerticalInGripper(blockLength)
+                releaseCoords = goalBlock.gripperFrameCoords 
                 print(f"Release on object {whereToMoveTo} at position {releaseCoords}")
             # After moving a block we need to update its position
             blockToMove.gripperFrameCoords = copy.deepcopy(releaseCoords)

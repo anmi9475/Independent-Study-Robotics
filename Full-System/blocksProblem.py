@@ -51,7 +51,7 @@ class blocksProblem(bd.blocksDomain):
                     newPredicate = self.Block(self.objects[objects])
                 goalState.append(newPredicate)
         return goalState
-
+        
         '''
         goalTruths = [
             self.on(self.objects["blueBlock"],self.objects["loc-b"]),
@@ -71,10 +71,11 @@ class blocksProblem(bd.blocksDomain):
             self.on(self.objects["blueBlock"],self.objects["loc-b"])
         ]
         '''
-        '''
+        '''    
         goalTruths = [
             self.on(self.objects["blueBlock"],self.objects["redBlock"])
         ]
+
         '''
         '''
         goalTruths = [

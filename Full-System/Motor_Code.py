@@ -102,7 +102,9 @@ class Motors:
     def Load(self):
         self.Motor1.get_load()
         self.Motor2.get_load()
-
+        
+    def disconnect(self):
+        Ax12.disconnect()
 
 if __name__ =="__main__":
     Controller = Motors()

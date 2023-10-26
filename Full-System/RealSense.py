@@ -165,3 +165,6 @@ class RealSense():
         finally:
             vis.destroy_window()
             # pipe.stop()
+
+    def disconnect(self):
+        self.pipe.stop()
