@@ -136,9 +136,9 @@ for step in steps:
     ur.closeGripper(9) 
     time.sleep(sleepRate)
     moveBackFromBlock(homePose)
-    moveToBlock(releasePos)
-    ur.closeGripper(55)
-    moveBackFromBlock(homePose)
+    #moveToBlock(releasePos)
+    #ur.closeGripper(55)
+    #moveBackFromBlock(homePose)
     ur.openGripper()
         
     
