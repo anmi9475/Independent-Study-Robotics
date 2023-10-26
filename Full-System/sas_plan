@@ -1,3 +1,0 @@
-(move redblock yellowblock redblock)
-(move blueblock loc-c yellowblock)
-; cost = 2 (unit cost)
