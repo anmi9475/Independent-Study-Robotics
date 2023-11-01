@@ -15,8 +15,8 @@ class ObjectDetection():
         # :moveRelative boolean - True if the gripper moves to block positions in the camera frame, false if moving to world frame positions (via rtb_model)
         # robot_model is object of type RTB_Model
         self.real = RealSense
-        '''
-        # self.real.initConnection()
+        
+        self.real.initConnection()
         if moveRelative:
             t = np.array([0,9,59.3]) / 1000
             R = np.array([[0,1,0],[-1,0,0],[0,0,1]])
@@ -30,7 +30,7 @@ class ObjectDetection():
             print(T_C)
             self.real.cameraFrameTransform = np.array(T_C)
             self.real.extrinsics = np.array(T_C.inv())
-        '''
+        
         # Load the model into memory
         # Trained on yolov8l-seg for 200 epochs
         # yolo models compared https://docs.ultralytics.com/tasks/segment/
@@ -48,6 +48,7 @@ class ObjectDetection():
                 mask = result.masks.data[i].numpy()  # (384,640)
                 # Resize mask to original imae size
                 scaledMask = cv2.resize(mask, (result.orig_shape[1], result.orig_shape[0]))
+                print("!!!!!!!!!!!!!!!!!!!" + scaledMask)
                 return scaledMask
         return None
 

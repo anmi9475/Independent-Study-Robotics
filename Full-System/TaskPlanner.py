@@ -4,6 +4,7 @@ import os
 import copy
 import numpy as np
 
+
 class TaskPlanner():
     def __init__(self, blocks):
         self.blocks = blocks
@@ -145,7 +146,7 @@ class TaskPlanner():
         # precondition: call generatePDDLPlan prior to calling this
         # parses outputted plan in the sas_plan file into a sequence of coordinates to visit
         # planFile = open("./sas_plan", "r")
-        planFile = open("./sas_plan_test", "r")
+        planFile = open("./sas_plan", "r")
         fileText = planFile.read()
         planFile.close()
         steps = []
@@ -184,6 +185,7 @@ class TaskPlanner():
                 goalPostion = copy.deepcopy(nameMap[whereToMoveTo])
                 blockLength = 0.02
                 releaseCoords = goalBlock.gripperFrameCoords 
+                
                 print(f"Release on object {whereToMoveTo} at position {releaseCoords}")
             # After moving a block we need to update its position
             blockToMove.gripperFrameCoords = copy.deepcopy(releaseCoords)

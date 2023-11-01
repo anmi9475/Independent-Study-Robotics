@@ -62,13 +62,13 @@ class Block():
         # Homogenous coordinates
         # gripperFrameCoords = np.matmul(np.array(sm.SE3.Rt(R,t)),self.cameraFrameCoords[0:3])
         gripperFrameCoords = (sm.SE3.Rt(R, t) * sm.SE3.Trans(self.camFrameCoords[0:3])).t
-        '''
+        
         # For visualization in displayPCD
         self.real.cameraFrameTransform = np.array(camera_frame_transform)
         print(f"Camera Frame Transform:\n{self.real.cameraFrameTransform}")
         self.real.extrinsics = np.array(camera_frame_transform.inv())
         print(f"Extrinsics:\n{self.real.extrinsics}")
-        '''
+        
 
         return gripperFrameCoords
 
