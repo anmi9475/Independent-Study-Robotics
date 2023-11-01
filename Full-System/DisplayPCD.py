@@ -38,7 +38,8 @@ try:
     blocks = detector.getBlocksFromImages(colorImage,depthImage,urPose)
     
     planner = tp.TaskPlanner(blocks)
-    goalDict = {"on":[("blueBlock","yellowBlock")]}
+    # goalDict = {"on":[("blueBlock", "on":[("redBlock","yellowBlock")])]}
+    goalDict = {"on":[("redBlock","yellowBlock")]}
     steps = planner.generatePlan(goalDict)
     print(steps)
     for block in blocks:

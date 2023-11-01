@@ -18,12 +18,12 @@ class MotionPlanner():
         blueBlock = self.blocks[0]
         yellowBlock = self.blocks[1]
         xB, yB, zB = yellowBlock.gripperFrameCoords  # grasp point in gripper frame
-        print(f"Block Coordinate:({xB * 1000},{yB * 1000},{zB * 1000})")
+        print(f"Block Coordinate:({xB},{yB},{zB})")
         currentPose = self.ur.getPose()  # SE3 Object
         R = currentPose.R
         pX, pY, pZ = tuple(currentPose.t)
-        print(f"Current Pose:\n{currentPose * 1000}")
-        print(f"Pose Coordinate: ({pX * 1000},{pY * 1000},{pZ * 1000})")
+        print(f"Current Pose:\n{currentPose}")
+        print(f"Pose Coordinate: ({pX},{pY},{pZ})")
         if self.moveRelative == False:
             # Move directly to block position in world frame
             goalPose = copy.deepcopy(currentPose)
@@ -45,7 +45,7 @@ class MotionPlanner():
             goalPose.t[0] += goalX
             goalPose.t[1] += goalY
 
-        print(f"Goal Coordinate ({goalPose.t[0] * 1000},{goalPose.t[1] * 1000},{goalPose.t[2] * 1000})")
+        print(f"Goal Coordinate ({goalPose.t[0]},{goalPose.t[1]},{goalPose.t[2]})")
         print("Moving to goal")
         print(f"Goal Pose\n {goalPose}")
         # self.ur.moveL(goalPose)

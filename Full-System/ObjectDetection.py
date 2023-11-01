@@ -113,7 +113,7 @@ class ObjectDetection():
         redPCD = o3d.geometry.PointCloud.create_from_depth_image(
             depth=o3d.geometry.Image(redDepthImage), 
             intrinsic=self.real.pinholeInstrinsics, 
-            depth_scale=1, 
+            depth_scale=1000.0, 
             depth_trunc=1000.0, 
             stride=1, 
             project_valid_depth_only=True)
@@ -121,7 +121,7 @@ class ObjectDetection():
         yellowPCD = o3d.geometry.PointCloud.create_from_depth_image(
             depth=o3d.geometry.Image(yellowDepthImage), 
             intrinsic=self.real.pinholeInstrinsics, 
-            depth_scale=1, 
+            depth_scale=1000.0, 
             depth_trunc=1000.0, 
             stride=1, 
             project_valid_depth_only=True)
@@ -129,7 +129,7 @@ class ObjectDetection():
         bluePCD = o3d.geometry.PointCloud.create_from_depth_image(
             depth=o3d.geometry.Image(blueDepthImage), 
             intrinsic=self.real.pinholeInstrinsics, 
-            depth_scale=1, # FYI: previously this scale was set to 1
+            depth_scale=1000.0, # FYI: previously this scale was set to 1
             depth_trunc=1000.0, 
             stride=1, 
             project_valid_depth_only=True) # TODO: try this line for both off and on with all PCDs
@@ -160,7 +160,7 @@ class ObjectDetection():
         geometry.append(worldPCD)
         for block in blocks:
             geometry.append(block.blockPCD)
-            geometry.append(block.blockAABB)
+            geometry.append(block.blockOBB)
             sphere = o3d.geometry.TriangleMesh.create_sphere(radius=0.0035)
             sphere.transform(np.array(sm.SE3.Trans(block.camFrameCoords)))
             geometry.extend([sphere])

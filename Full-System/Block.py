@@ -13,11 +13,11 @@ class Block():
         self.clusterBlockPCD()
         self.blockAABB = self.blockPCD.get_axis_aligned_bounding_box()
         self.blockOBB = self.blockPCD.get_oriented_bounding_box()
-        self.blockAABB.color, self.blockOBB.color = [0, 0, 0], [0, 0, 0]
+        self.blockAABB.color, self.blockOBB.color = [0, 0, 0], [245, 22, 22]
         self.urPose = urPose  # Pose of the Nth frame of the UR5 when the image was taken
-        x, y = self.blockAABB.get_center()[0:2]
+        x, y = self.blockOBB.get_center()[0:2]
         # due to convex hull outliers are included when mask is off. Use min bound rather than center
-        zMin = self.blockAABB.get_min_bound()[2]
+        zMin = self.blockOBB.get_min_bound()[2]
         self.camFrameCoords = np.matrix([x, y, zMin])
         self.gripperFrameCoords = self.getCenterInGripperFrame()
         self.worldFrameCoords = self.getCenterInWorld()  # Approximate coordinates in world frame

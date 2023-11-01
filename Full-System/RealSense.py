@@ -81,7 +81,7 @@ class RealSense():
             np.save(f"colorImage{subFix}", rawRGBDImage.color)
             colorIM = Image.fromarray(rawColorImage)
             colorIM.save(f"colorImage{subFix}.jpeg")
-        return rawRGBDImage
+        return rawDepthImage
 
     def getPCD(self, save=False):
         # Takes images and returns a PCD and RGBD Image
@@ -89,12 +89,14 @@ class RealSense():
         # Downsamples PCD based on self.voxelSize
         # :save boolean that toggles whether to save data
         # out: tuple of (open3d point cloud (o3d.geometry.PointCloud),RGBDImage)
-        rawRGBDImage = self.takeImages()
-        pcd = o3d.geometry.PointCloud.create_from_rgbd_image(
-            rawRGBDImage,
-            self.pinholeInstrinsics,
-            project_valid_depth_only=True,
-            extrinsic=self.extrinsics
+        rawDepthImage = self.takeImages()
+        pcd = o3d.geometry.PointCloud.create_from_depth_image(
+            depth=o3d.geometry.Image(rawDepthImage),
+            intrinsic=self.pinholeInstrinsics, 
+            depth_scale=1000.0, 
+            depth_trunc=1000.0, 
+            stride=1, 
+            project_valid_depth_only=True
         )
 
         # Don't downsample
@@ -104,7 +106,7 @@ class RealSense():
             np.save(f"colorImage{subFix}", np.array(rawRGBDImage.color))
             np.save(f"depthImage{subFix}", np.array(rawRGBDImage.depth))
             o3d.io.write_point_cloud(f"pcd{subFix}.pcd", downsampledPCD)
-        return pcd, rawRGBDImage
+        return pcd, rawDepthImage
         # return (downsampledPCD,rawRGBDImage)
 
     def displayImages(self, depthImg, colorImg):

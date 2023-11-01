@@ -145,7 +145,7 @@ class TaskPlanner():
         # precondition: call generatePDDLPlan prior to calling this
         # parses outputted plan in the sas_plan file into a sequence of coordinates to visit
         # planFile = open("./sas_plan", "r")
-        planFile = open("./sas_plan_test", "r")
+        planFile = open("./sas_plan", "r")
         fileText = planFile.read()
         planFile.close()
         steps = []
