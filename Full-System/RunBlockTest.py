@@ -130,8 +130,8 @@ try:
     for step in steps:
         # Grasp and Move Home Step
         grabPos,releasePos = step
-        releasePos[1] = releasePos[1] + 0.02 + i
-        releasePos[2] = releasePos[2] + 0.00
+        releasePos[1] = releasePos[1] + 0.025
+        releasePos[2] = releasePos[2] + 0.025
         print("This is the releasePos" , releasePos)
         print("This is the GrabPos" , grabPos)
         moveToBlock(grabPos) 
@@ -142,7 +142,7 @@ try:
         moveToBlock(releasePos)
         ur.openGripper()
         moveBackFromBlock(homePose)
-        i = i + .02
+        
     
     
     

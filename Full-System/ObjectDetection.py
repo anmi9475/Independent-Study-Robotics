@@ -111,25 +111,25 @@ class ObjectDetection():
         # SEGMENT PCD INTO RED,YELLOW,BLUE BLOCKS
         
         redPCD = o3d.geometry.PointCloud.create_from_depth_image(
-            depth=redDepthImage, 
+            depth=o3d.geometry.Image(redDepthImage), 
             intrinsic=self.real.pinholeInstrinsics, 
-            depth_scale=1000.0, 
+            depth_scale=1, 
             depth_trunc=1000.0, 
             stride=1, 
             project_valid_depth_only=True)
         
         yellowPCD = o3d.geometry.PointCloud.create_from_depth_image(
-            depth=yellowDepthImage, 
+            depth=o3d.geometry.Image(yellowDepthImage), 
             intrinsic=self.real.pinholeInstrinsics, 
-            depth_scale=1000.0, 
+            depth_scale=1, 
             depth_trunc=1000.0, 
             stride=1, 
             project_valid_depth_only=True)
         
         bluePCD = o3d.geometry.PointCloud.create_from_depth_image(
-            depth=blueDepthImage, 
+            depth=o3d.geometry.Image(blueDepthImage), 
             intrinsic=self.real.pinholeInstrinsics, 
-            depth_scale=1000.0, # FYI: previously this scale was set to 1
+            depth_scale=1, # FYI: previously this scale was set to 1
             depth_trunc=1000.0, 
             stride=1, 
             project_valid_depth_only=True) # TODO: try this line for both off and on with all PCDs
