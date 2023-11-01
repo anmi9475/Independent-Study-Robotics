@@ -6,6 +6,8 @@ import cv2
 import open3d as o3d
 import Block as bl
 import spatialmath as sm
+import pdb
+
 class ObjectDetection():
     # This class creates a RealSense Object, takes images and returns Open3D point clouds corresponding to blocks
     # Extrinsics of RealSense Object are no longer used here so interfacing with the Realsense could be done outside this class for decoupling
@@ -107,46 +109,33 @@ class ObjectDetection():
         blueDepthImage = np.multiply(depthImage, blueMask.astype(int)).astype('float32')
 
         # SEGMENT PCD INTO RED,YELLOW,BLUE BLOCKS
-        depthScale = self.real.depthScale
+        
+        redPCD = o3d.geometry.PointCloud.create_from_depth_image(
+            depth=redDepthImage, 
+            intrinsic=self.real.pinholeInstrinsics, 
+            depth_scale=1000.0, 
+            depth_trunc=1000.0, 
+            stride=1, 
+            project_valid_depth_only=True)
+        
+        yellowPCD = o3d.geometry.PointCloud.create_from_depth_image(
+            depth=yellowDepthImage, 
+            intrinsic=self.real.pinholeInstrinsics, 
+            depth_scale=1000.0, 
+            depth_trunc=1000.0, 
+            stride=1, 
+            project_valid_depth_only=True)
+        
+        bluePCD = o3d.geometry.PointCloud.create_from_depth_image(
+            depth=blueDepthImage, 
+            intrinsic=self.real.pinholeInstrinsics, 
+            depth_scale=1000.0, # FYI: previously this scale was set to 1
+            depth_trunc=1000.0, 
+            stride=1, 
+            project_valid_depth_only=True) # TODO: try this line for both off and on with all PCDs
+        
 
-        # Create Segmented RGBD Images for Each Color
-        redRGDB_Image = o3d.geometry.RGBDImage.create_from_color_and_depth(
-            o3d.geometry.Image(colorImage),
-            o3d.geometry.Image(redDepthImage),
-            convert_rgb_to_intensity=False,
-            depth_scale=1
-        )
 
-        yellowRGDB_Image = o3d.geometry.RGBDImage.create_from_color_and_depth(
-            o3d.geometry.Image(colorImage),
-            o3d.geometry.Image(yellowDepthImage),
-            convert_rgb_to_intensity=False,
-            depth_scale=1
-        )
-
-        blueRGBD_Image = o3d.geometry.RGBDImage.create_from_color_and_depth(
-            o3d.geometry.Image(colorImage),
-            o3d.geometry.Image(blueDepthImage),
-            convert_rgb_to_intensity=False,
-            depth_scale=1
-        )
-
-        # Create Point Clouds for Each Class
-        redPCD = o3d.geometry.PointCloud.create_from_rgbd_image(
-            redRGDB_Image,
-            self.real.pinholeInstrinsics,
-            project_valid_depth_only=True
-        )
-        yellowPCD = o3d.geometry.PointCloud.create_from_rgbd_image(
-            yellowRGDB_Image,
-            self.real.pinholeInstrinsics,
-            project_valid_depth_only=True
-        )
-        bluePCD = o3d.geometry.PointCloud.create_from_rgbd_image(
-            blueRGBD_Image,
-            self.real.pinholeInstrinsics,
-            project_valid_depth_only=True
-        )
         '''
         # Downsample point cloud's based on realsense voxel_size parameter
         redPCD = redPCD.voxel_down_sample(voxel_size=self.real.voxelSize)
