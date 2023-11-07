@@ -6,6 +6,8 @@ import RealSense as real
 import ObjectDetection as ob
 import TaskPlanner as tp
 import Block as bl
+import open3d as o3d
+
  
 try:
     robotIP = "192.168.0.6"

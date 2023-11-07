@@ -137,7 +137,7 @@ try:
         print("releasePos[1]: ", releasePos[1]) # 0.02654946393066391
         print("releasePos[1] plus 2.5cm: ", releasePos[1] + 0.025) # 0.05154946393066391
         releasePos[1] = releasePos[1] + 0.02 + y_mod
-        releasePos[2] = releasePos[2] - 0.015 + z_mod
+        releasePos[2] = releasePos[2]
         print("This is the releasePos" , releasePos)
         print("This is the GrabPos" , grabPos)
         moveToBlock(grabPos) 
