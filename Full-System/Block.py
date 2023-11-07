@@ -10,18 +10,17 @@ class Block():
         self.blockPCD = pcd
         self.name = name
         # Removes outlier points by fitting block into largest cluster
-        self.clusterBlockPCD()
+        self.clusterBlockPCD() # denoises the pcd
         self.blockAABB = self.blockPCD.get_axis_aligned_bounding_box()
-        self.blockOBB = self.blockPCD.get_oriented_bounding_box()
+        self.blockOBB = self.blockPCD.get_oriented_bounding_box(robust=True)
         self.blockAABB.color, self.blockOBB.color = [0, 0, 0], [245, 22, 22]
         self.urPose = urPose  # Pose of the Nth frame of the UR5 when the image was taken
-        x, y = self.blockOBB.get_center()[0:2]
-        # due to convex hull outliers are included when mask is off. Use min bound rather than center
-        zMin = self.blockOBB.get_min_bound()[2]
-        self.camFrameCoords = np.matrix([x, y, zMin])
+        # get_center returns array of x, y, z coordinates
+        self.camFrameCoords = np.matrix(self.blockOBB.get_center())
         self.gripperFrameCoords = self.getCenterInGripperFrame()
         self.worldFrameCoords = self.getCenterInWorld()  # Approximate coordinates in world frame
 
+    # TODO: try this with and without the noise eliminatin to see if this is necessary
     def clusterBlockPCD(self):
         # modifies block PCD to only contain points in the largest cluster found with DBScan
         # eps found experimentally
@@ -58,8 +57,10 @@ class Block():
         R = np.array([[0, 1, 0],
                       [-1, 0, 0],
                       [0, 0, 1]])  # camera frame basis with respect to gripper frame
-        t = np.array([0, 9, 59.3]) / 1000  # camera frame origin with respect to gripper frame (mm)
+        t = np.array([0, 0.009, 0.0593])
         # Homogenous coordinates
+
+        # TODO: Jensen, why is he choosing one over the other? Try both to test.
         # gripperFrameCoords = np.matmul(np.array(sm.SE3.Rt(R,t)),self.cameraFrameCoords[0:3])
         gripperFrameCoords = (sm.SE3.Rt(R, t) * sm.SE3.Trans(self.camFrameCoords[0:3])).t
         '''
@@ -69,9 +70,9 @@ class Block():
         self.real.extrinsics = np.array(camera_frame_transform.inv())
         print(f"Extrinsics:\n{self.real.extrinsics}")
         '''
-
         return gripperFrameCoords
 
+    # TODO: Mess with this because d seems suspicious
     def getCenterInWorld(self):
         # :urPose SE3 Transform that is the current pose of the Nth frame of the UR5 (given by ur.getPose)
         # Uses pose of the Nth frame from UR5 Interface to return the approximate center of the block in the world frame
@@ -92,7 +93,7 @@ class Block():
     def getGraspPoint(self):
         # returns the (x,y,z) coordinates in either the world or camera coordinate frame of where the gripper should be placed (depending on if extrinsics were set when creating the PCD)
         # center of front-facing axis-aligned bounding box
-        x, y, z = self.blockAABB.get_center()[0:3]
+        x, y, z = self.blockOBB.get_center()[0:3]
         # z = self.blockAABB.get_min_bound()[2]
         return (x, y, z)
 
