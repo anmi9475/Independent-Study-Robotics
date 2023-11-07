@@ -10,7 +10,7 @@ class Block():
         self.blockPCD = pcd
         self.name = name
         # Removes outlier points by fitting block into largest cluster
-        self.clusterBlockPCD() # denoises the pcd
+        self.clusterBlockPCD() # denoises the pcd <-- this definitely seems to help with the point cloud visualization (andrea)
         self.blockAABB = self.blockPCD.get_axis_aligned_bounding_box()
         self.blockOBB = self.blockPCD.get_oriented_bounding_box(robust=True)
         self.blockAABB.color, self.blockOBB.color = [0, 0, 0], [0, 0, 0]

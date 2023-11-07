@@ -7,6 +7,7 @@ import ObjectDetection as ob
 import TaskPlanner as tp
 import Block as bl
 import open3d as o3d
+import numpy as np
 
  
 try:
@@ -34,7 +35,10 @@ try:
     except Exception as e:
         detector.real.pipe.stop()
         raise(e)
-    urPose = ur.getPose()
+    urPose, tcpPose = ur.getPose()
+    print("tcp: ", tcpPose)
+    jointAngles = ur.getJointAngles()
+    print("Joint Angles: ", jointAngles*180/np.pi)
     pcd,rgbdImage = detector.real.getPCD()
     depthImage,colorImage = rgbdImage.depth,rgbdImage.color
     blocks = detector.getBlocksFromImages(colorImage,depthImage,urPose)

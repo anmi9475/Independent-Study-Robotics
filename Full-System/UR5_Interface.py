@@ -21,7 +21,7 @@ class UR5_Interface():
         poseMatrix = self.poseVectorToMatrix(p)
         T_N = sm.SE3(poseMatrix)
         # T_N.plot(name="C")
-        return T_N
+        return T_N, poseMatrix
 
     def poseVectorToMatrix(self, poseVector):
         # Converts poseVector into an SE3 Object (4 x 4 Homegenous Transform)
