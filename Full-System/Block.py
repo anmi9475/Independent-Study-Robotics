@@ -46,7 +46,7 @@ class Block():
             clusterPCD = self.blockPCD.select_by_index(clusters[clusterLabel])
             clusterPCDs.append((len(clusterPCD.points), clusterPCD))
 
-        print(clusterPCDs)
+        print("clusterPCDs: ", clusterPCDs)
         clusterPCDs.sort()
         clusterPCDs.reverse()
 
@@ -82,6 +82,8 @@ class Block():
         currentPose = self.urPose  # Pose of Nth frame of UR5, SE3 Object
         # d should probably be a 3D translation but this is for testing
         d = 0.1125  # estimated distance between origin of Nth link and and center of gripper frame along urPose's z-axis (m)
+        print("sm.SE3: ", sm.SE3.Tz(d))
+        print("currentPose: ", currentPose)
         gripperFramePose = currentPose * sm.SE3.Tz(d)
         worldFrameCoords = (gripperFramePose * sm.SE3.Trans(self.gripperFrameCoords)).t
         return worldFrameCoords

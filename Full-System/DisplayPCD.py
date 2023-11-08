@@ -35,8 +35,7 @@ try:
     except Exception as e:
         detector.real.pipe.stop()
         raise(e)
-    urPose, tcpPose = ur.getPose()
-    print("tcp: ", tcpPose)
+    urPose = ur.getPose()
     jointAngles = ur.getJointAngles()
     print("Joint Angles: ", jointAngles*180/np.pi)
     pcd,rgbdImage = detector.real.getPCD()
