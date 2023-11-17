@@ -1,3 +1,5 @@
+# Class is not used anywhere in project!!!!
+
 class MotionPlanner():
     def __init__(self, blocks, moveRelative=True):
         # :moveRelative boolean - True if the gripper moves to block positions in the gripper frame, false if moving to world frame positions (via rtb_model)
@@ -8,6 +10,7 @@ class MotionPlanner():
     def displayOpen3D(self):
         pass
 
+    # not used anywhere curretnly, if implemented, note blockAABB s/b blockOBB
     def displaySwift(self):
         self.robot_model.initSwiftEnv()
         for Block in self.blocks:

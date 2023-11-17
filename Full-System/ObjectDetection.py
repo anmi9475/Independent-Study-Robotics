@@ -161,8 +161,11 @@ class ObjectDetection():
         for block in blocks:
             geometry.append(block.blockPCD)
             geometry.append(block.blockOBB)
+            # why are we creating a sphere here. 
+            # TODO: try create_box method instead of create_sphere
             sphere = o3d.geometry.TriangleMesh.create_sphere(radius=0.0035)
-            sphere.transform(np.array(sm.SE3.Trans(block.camFrameCoords)))
+            # TODO: figure out what transformations are happening here and would it be better to use Magpie's homogoneous matrix method?
+            sphere.transform(np.array(sm.SE3.Trans(block.camFrameCoords))) # Apply transformation (4x4 matrix) to the geometry coordinates
             geometry.extend([sphere])
             '''
             print(f"{block.name}")

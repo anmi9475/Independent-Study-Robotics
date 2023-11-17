@@ -35,14 +35,15 @@ try:
     real = real.RealSense()
     real.initConnection()
     try:
+        # use RTB_Model class if we want to utilize the robot_model parameter, if so, moveRelative bool needs to be False
         detector = ob.ObjectDetection(real,None,moveRelative = True)
     except Exception as e:
         detector.real.pipe.stop()
         raise(e)
     urPose = ur.getPose()
-    pcd,rgbdImage = detector.real.getPCD()
-    depthImage,colorImage = rgbdImage.depth,rgbdImage.color
-    blocks = detector.getBlocksFromImages(colorImage,depthImage,urPose,display = True)
+    pcd, rgbdImage = detector.real.getPCD()
+    depthImage, colorImage = rgbdImage.depth, rgbdImage.color
+    blocks = detector.getBlocksFromImages(colorImage, depthImage, urPose, display = True)
     
     planner = tp.TaskPlanner(blocks)
     goalDict = {"on":[("redBlock","yellowBlock")]}
