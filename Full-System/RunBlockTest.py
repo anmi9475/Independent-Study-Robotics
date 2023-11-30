@@ -151,21 +151,6 @@ try:
         moveBackFromBlock(homePose)
         y_mod += 0.02
         z_mod -= 0.015
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     gripperController.openGripper()
     gripperController.disconnect()
     ur.c.disconnect()
