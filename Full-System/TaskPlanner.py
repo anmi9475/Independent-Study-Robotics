@@ -8,6 +8,7 @@ class TaskPlanner():
     def __init__(self, blocks):
         self.blocks = blocks
         self.blockConnections = None
+        # loc's will have same positions as blocks, but they should really be below them which requires projection
         self.locPositions = {}  # dictionary that maps from location names to gripper frame coordinates
         pass
 
@@ -55,8 +56,6 @@ class TaskPlanner():
         bottomBlocks.sort()
         bottomBlocks.reverse()
 
-        # loc's will have same positions as blocks, but they should really be below them which requires projection
-        locPositions = {}  # maps from loc name to position in gripper frame
 
         # Method assumes there is enough room between the left and rightmost blocks for loc b (cannot have a stack only in locA,locB with locC on right and empty)
         if len(bottomBlocks) >= 2:
