@@ -1,3 +1,5 @@
+from typing import List
+
 from ultralytics import YOLO
 from PIL import Image
 import numpy as np
@@ -7,6 +9,13 @@ import open3d as o3d
 import Block as bl
 import spatialmath as sm
 import pdb
+
+
+class TorchImage:
+    def __init__(self, pose, ci, di):
+        self.pose = pose
+        self.colorImage = ci
+        self.depthImage = di
 
 class ObjectDetection():
     # This class creates a RealSense Object, takes images and returns Open3D point clouds corresponding to blocks
@@ -53,7 +62,7 @@ class ObjectDetection():
                 return scaledMask
         return None
 
-    def getBlocksFromImages(self, colorImage, depthImage, urPose, display=False):
+    def getBlocksFromImages(self, images: List[TorchImage], display=False):
         # :colorImage 3-channel rgb image as numpy array
         # :depthImage 1-channel of measurements in z-axis as numpy array
         # :display boolean that toggles whether masks should be shown with color image
@@ -63,12 +72,24 @@ class ObjectDetection():
 
         # Detects and segments classes using trained yolov8l-seg model
         # Inference step, only return instances with confidence > 0.6
-        pilImage = Image.fromarray(np.array(colorImage))
-        result = self.model.predict(pilImage, conf=0.6, save=True)[0]
 
-        redMask = self.getSegmentationMask(result, 'Red')
-        yellowMask = self.getSegmentationMask(result, 'Yellow')
-        blueMask = self.getSegmentationMask(result, 'Blue')
+        chosen_image: TorchImage
+        chosen_model_result = None
+
+        for image in images:
+            pilImage = Image.fromarray(np.array(image.colorImage))
+            result = self.model.predict(pilImage, conf=0.6, save=True)[0]
+
+            if not chosen_model_result: # first iteration b/c initally falsy
+                chosen_model_result = result
+            else:
+                # is the model we just ran the best?
+                # yes -> set chosen image to image and chosen model result to result
+                # no -> move on
+
+        redMask = self.getSegmentationMask(chosen_model_result, 'Red')
+        yellowMask = self.getSegmentationMask(chosen_model_result, 'Yellow')
+        blueMask = self.getSegmentationMask(chosen_model_result, 'Blue')
 
         '''
         if display:
@@ -88,9 +109,9 @@ class ObjectDetection():
         if display:
             fig, ax = plt.subplots(2, 1)
             print("Color Image and Depth Image")
-            ax[0].imshow(colorImage)
+            ax[0].imshow(chosen_image.colorImage)
             ax[0].set_title("Color Image")
-            ax[1].imshow(depthImage)
+            ax[1].imshow(chosen_image.depthImage)
             ax[1].set_title("Depth Image")
             plt.show()
 
@@ -104,9 +125,9 @@ class ObjectDetection():
             ax[2].set_title("Blue Mask")
             plt.show()
 
-        redDepthImage = np.multiply(depthImage, redMask.astype(int)).astype('float32')
-        yellowDepthImage = np.multiply(depthImage, yellowMask.astype(int)).astype('float32')
-        blueDepthImage = np.multiply(depthImage, blueMask.astype(int)).astype('float32')
+        redDepthImage = np.multiply(chosen_image.depthImage, redMask.astype(int)).astype('float32')
+        yellowDepthImage = np.multiply(chosen_image.depthImage, yellowMask.astype(int)).astype('float32')
+        blueDepthImage = np.multiply(chosen_image.depthImage, blueMask.astype(int)).astype('float32')
 
         # SEGMENT PCD INTO RED,YELLOW,BLUE BLOCKS
         
@@ -148,9 +169,9 @@ class ObjectDetection():
 
         # o3d.visualization.draw([redPCD,yellowPCD,bluePCD])
         # o3d.visualization.draw_geometries([redPCD,yellowPCD,bluePCD])
-        redBlock = bl.Block("redBlock", redPCD, urPose)
-        yellowBlock = bl.Block("yellowBlock", yellowPCD, urPose)
-        blueBlock = bl.Block("blueBlock", bluePCD, urPose)
+        redBlock = bl.Block("redBlock", redPCD, chosen_image.pose)
+        yellowBlock = bl.Block("yellowBlock", yellowPCD, chosen_image.pose)
+        blueBlock = bl.Block("blueBlock", bluePCD, chosen_image.pose)
         return (redBlock, yellowBlock, blueBlock)
         # return (redPCD,yellowPCD,bluePCD)
 

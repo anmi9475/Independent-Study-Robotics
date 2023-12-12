@@ -48,13 +48,18 @@ class UR5_Interface():
         poseVector = self.poseMatrixToVector(poseMatrix)
         self.c.moveL(poseVector, 0.25, 0.5, False)
 
-    def moveHome(self):
+    def moveStart(self):
         # Moves the arm linearly in cartesian space to home pose
         homePose = np.array([[0.99955322, -0.02418213, -0.01756664, 0.01498893],
                              [-0.01748495, 0.00358545, -0.9998407, -0.57686779],
                              [0.02424126, 0.99970114, 0.00316103, 0.05545535],
                              [0, 0, 0, 1]])
         self.arm.move(target=homePose, move_type="l")
+
+    def moveToPosition(self, position):
+        # position is the numpy array similar to lines 53-56
+        self.arm.move(target=position, move_type="l")
+
 
     def openGripper(self):
         self.gripperController.openGripper()

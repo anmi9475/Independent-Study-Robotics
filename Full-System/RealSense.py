@@ -49,7 +49,8 @@ class RealSense():
     def takeImages(self, save=False):
         # Takes RGBD Image using Realsense
         # intrinsic and extrinsic parameters are NOT applied only in getPCD()
-        # out: Open3D RGBDImage
+        # out: list of Open3D RGBDImages
+
         pipe, config = self.pipe, self.config
 
         frames = pipe.wait_for_frames()
