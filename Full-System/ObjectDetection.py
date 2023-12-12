@@ -86,6 +86,7 @@ class ObjectDetection():
                 # is the model we just ran the best?
                 # yes -> set chosen image to image and chosen model result to result
                 # no -> move on
+                chosen_model_result = result # placeholder code 
 
         redMask = self.getSegmentationMask(chosen_model_result, 'Red')
         yellowMask = self.getSegmentationMask(chosen_model_result, 'Yellow')

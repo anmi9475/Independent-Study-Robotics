@@ -3,7 +3,7 @@ import math
 class Motors:
    
     def __init__(self, servoport = '/dev/ttyACM0'):
-        # e.g 'COM3' windows or '/dev/ttyUSB0' for Linux
+        # e.g 'COM3' windows or '/dev/ttyUSB0' for Linux, '/dev/ttyACM0'
         # sets baudrate and opens com port
 #         Ax12.DEVICENAME = '/dev/cu.usbmodem141401'
         Ax12.DEVICENAME = servoport

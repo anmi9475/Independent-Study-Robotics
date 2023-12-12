@@ -54,11 +54,12 @@ class UR5_Interface():
                              [-0.01748495, 0.00358545, -0.9998407, -0.57686779],
                              [0.02424126, 0.99970114, 0.00316103, 0.05545535],
                              [0, 0, 0, 1]])
-        self.arm.move(target=homePose, move_type="l")
+        # self.arm.move(target=homePose, move_type="l")
+        self.c.moveL(homePose, 0.25, 0.5, False)
 
     def moveToPosition(self, position):
         # position is the numpy array similar to lines 53-56
-        self.arm.move(target=position, move_type="l")
+        self.c.moveL(position, 0.25, 0.5, False)
 
 
     def openGripper(self):

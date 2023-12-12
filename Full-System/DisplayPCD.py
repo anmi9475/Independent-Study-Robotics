@@ -10,17 +10,22 @@ import TaskPlanner as tp
 import Block as bl
 import open3d as o3d
 import numpy as np
+import serial.tools.list_ports
 
+
+# def get_USB_port_with_desc(descStr):
+#     match = None
+#     for port, desc, hwid in sorted (serial.tools.list_ports.comports()):
+#         if descStr in desc:
+#             match = port
+#             break
+#     return match
+
+
+pos_left = np.array([76.8, -91.67, 138.5, -33.3, 95.3, -3.0])
+pos_right = np.array([17.50, -86.5, 134.1, -10.13, 22.3, -38.3])
 # TODO: modify this as needed to get into position
-pos_left = np.array([[0.99955322, -0.02418213, -0.01756664, 0.01498893],
-                     [-0.01748495, 0.00358545, -0.9998407, -0.57686779],
-                     [0.02424126, 0.99970114, 0.00316103, 0.05545535],
-                     [0, 0, 0, 1]])
-# TODO: modify this as needed to get into position
-pos_right = np.array([[0.99955322, -0.02418213, -0.01756664, 0.01498893],
-                      [-0.01748495, 0.00358545, -0.9998407, -0.57686779],
-                      [0.02424126, 0.99970114, 0.00316103, 0.05545535],
-                      [0, 0, 0, 1]])
+
 
 positions_array = [
     pos_left,
@@ -32,6 +37,7 @@ def get_pcd_at_multiple_positions(robot: ur.UR5_Interface, camera: real.RealSens
     pcds = []
     rgbds = []
     for pos in positions_array:
+        print("pos: ", pos)
         robot.moveToPosition(pos)
         pcd, rgbd = camera.getPCD()
         pcds.append(pcd)
@@ -52,7 +58,9 @@ try:
     con = rtde_control.RTDEControlInterface(robotIP)
     rec = rtde_receive.RTDEReceiveInterface(robotIP)
     servoPort = "/dev/ttyACM0"
+    # servoPort = get_USB_port_with_desc("OpenRB") # this and the method are from Magpie
     gripperController = Motors(servoPort)
+    print("we made it here")
     gripperController.torquelimit(600)  # used to be 600
     gripperController.speedlimit(100)
     ur = ur.UR5_Interface()
@@ -69,6 +77,7 @@ try:
     real.initConnection()
     try:
         detector = ob.ObjectDetection(real, None, moveRelative=True)
+        print("Detector established")
     except Exception as e:
         detector.real.pipe.stop()
         raise (e)
@@ -78,7 +87,7 @@ try:
     # pcd, rgbdImage = detector.real.getPCD()  # HERE
     pcd, rgbds = get_pcd_at_multiple_positions(ur, real)
 
-    blocks = detector.getBlocksFromImages(colorImage, depthImage, urPose)
+    blocks = detector.getBlocksFromImages(rgbds)
 
 
     # need a method to get the best set of blocks from blocksList
