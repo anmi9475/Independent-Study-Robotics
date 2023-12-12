@@ -59,6 +59,7 @@ class UR5_Interface():
 
     def moveToPosition(self, position):
         # position is the numpy array similar to lines 53-56
+        # vector = self.poseMatrixToVector(position)
         self.c.moveL(position, 0.25, 0.5, False)
 
 

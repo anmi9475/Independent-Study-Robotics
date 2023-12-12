@@ -43,8 +43,7 @@ try:
     urPose = ur.getPose()
     jointAngles = ur.getJointAngles()
     print("Joint Angles: ", jointAngles * 180 / np.pi)
-    currentPose = ur.getPose()
-    print("pose matrix: ", currentPose)
+    # print("p pose: ", p) # p comes from the variable in the getPose method, I needed this to get the correct setup for the robot position
 except Exception as e:
     gripperController.disconnect()
     ur.c.disconnect()

@@ -21,10 +21,11 @@ import serial.tools.list_ports
 #             break
 #     return match
 
+# use GetRobotPose.py to get the position matrix for where I manually moved the robot to
+pos_left = np.array([-0.05591429128391958, -0.5380791072811699, 0.02990208142149539, 1.8719105457391148, -0.36717143076244796, -0.28374441118214333])
 
-pos_left = np.array([76.8, -91.67, 138.5, -33.3, 95.3, -3.0])
-pos_right = np.array([17.50, -86.5, 134.1, -10.13, 22.3, -38.3])
-# TODO: modify this as needed to get into position
+# TODO: the robot moves way too fast, from pos_left to pos_right. I need to figure out how to slow this down
+pos_right = np.array([-0.13941630966009855, -0.5429747311181137, 0.056392101609168285, 1.89720228366065, 0.20627407259726946, 0.09467935487757431])
 
 
 positions_array = [
