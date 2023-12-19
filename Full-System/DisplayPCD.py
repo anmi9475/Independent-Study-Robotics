@@ -61,7 +61,6 @@ try:
     servoPort = "/dev/ttyACM0"
     # servoPort = get_USB_port_with_desc("OpenRB") # this and the method are from Magpie
     gripperController = Motors(servoPort)
-    print("we made it here")
     gripperController.torquelimit(600)  # used to be 600
     gripperController.speedlimit(100)
     ur = ur.UR5_Interface()
@@ -87,6 +86,9 @@ try:
     print("Joint Angles: ", jointAngles * 180 / np.pi)
     # pcd, rgbdImage = detector.real.getPCD()  # HERE
     pcd, rgbds = get_pcd_at_multiple_positions(ur, real)
+
+    # switch get_pcd_at_multiple_positions method to return list of pcds
+    # use displayPCD from RealSense class
 
     blocks = detector.getBlocksFromImages(rgbds)
 
