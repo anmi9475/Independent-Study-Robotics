@@ -12,18 +12,18 @@ class UR5_Interface():
 
     def getJointAngles(self):
         # Returns a 6 element numpy array of joint angles (radians)
-        thetas = np.array(self.r.getActualQ())
+        thetas = np.array(self.r.getActualQ()) #getActualQ returns actual joint positions
         return thetas
 
     def getPose(self):
         # Returns the current pose of the last frame as a SE3 Object (4 x 4 Homegenous Transform)
         p = self.r.getActualTCPPose()
         poseMatrix = self.poseVectorToMatrix(p)
-        T_N = sm.SE3(poseMatrix)
+        T_N = sm.SE3(poseMatrix)   # convert a pose vector to a matrix SE3 object, SE3 --> special euclidean in 3-dimensional space
         # T_N.plot(name="C")
-        return T_N
+        return T_N    # T_N is a homogenous transform
 
-    def poseVectorToMatrix(self, poseVector):
+    def   poseVectorToMatrix(self, poseVector):
         # Converts poseVector into an SE3 Object (4 x 4 Homegenous Transform)
         # poseVector is a 6 element list of [x, y, z, rX, rY, rZ]
         T_N = sm.SE3(poses.pose_vec_to_mtrx(poseVector))

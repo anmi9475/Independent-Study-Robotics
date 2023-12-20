@@ -17,6 +17,35 @@ class TorchImage:
         self.colorImage = ci
         self.depthImage = di
 
+class ImagePacket:
+    def __init__(
+            self,
+            torch_image: TorchImage,
+            red_pcd: o3d.geometry.PointCloud,
+            yellow_pcd: o3d.geometry.PointCloud,
+            blue_pcd: o3d.geometry.PointCloud,
+            red_block: bl.Block,
+            yellow_block: bl.Block,
+            blue_block: bl.Block,
+
+    ):
+        self.torch_image = torch_image
+        self.red_pcd = red_pcd
+        self.yellow_pcd = yellow_pcd
+        self.blue_pcd = blue_pcd
+        self.red_block = red_block
+        self.yellow_block = yellow_block
+        self.blue_block = blue_block
+
+    def get_all_pcds(self) -> List[o3d.geometry.PointCloud]:
+        return [self.red_pcd, self.yellow_pcd, self.blue_pcd]
+
+    def get_all_blocks(self) -> List[bl.Block]:
+        return [self.red_block, self.yellow_block, self.blue_block]
+
+    def get_all_block_world_coords(self):
+        return [self.red_block.worldFrameCoords, self.yellow_block.worldFrameCoords, self.blue_block.worldFrameCoords]
+
 class ObjectDetection():
     # This class creates a RealSense Object, takes images and returns Open3D point clouds corresponding to blocks
     # Extrinsics of RealSense Object are no longer used here so interfacing with the Realsense could be done outside this class for decoupling
@@ -62,6 +91,66 @@ class ObjectDetection():
                 return scaledMask
         return None
 
+    def get_pcds_of_all_images(self, images: List[TorchImage]) -> List[ImagePacket]:
+        '''
+        Params: List of Pytorch Model Images
+        Returns List of Enriched ImagePacket's that contain all of the pcd's for each block
+        '''
+        image_packets = []
+        for image in images:
+            pilImage = Image.fromarray(np.array(image.colorImage))
+            result = self.model.predict(pilImage, conf=0.6, save=True)[0]
+            redMask = self.getSegmentationMask(result, 'Red')
+            yellowMask = self.getSegmentationMask(result, 'Yellow')
+            blueMask = self.getSegmentationMask(result, 'Blue')
+
+            redDepthImage = np.multiply(image.depthImage, redMask.astype(int)).astype('float32')
+            yellowDepthImage = np.multiply(image.depthImage, yellowMask.astype(int)).astype('float32')
+            blueDepthImage = np.multiply(image.depthImage, blueMask.astype(int)).astype('float32')
+
+            # SEGMENT PCD INTO RED,YELLOW,BLUE BLOCKS
+
+            redPCD = o3d.geometry.PointCloud.create_from_depth_image(
+                depth=o3d.geometry.Image(redDepthImage),
+                intrinsic=self.real.pinholeInstrinsics,
+                depth_scale=1000.0,
+                depth_trunc=1000.0,
+                stride=1,
+                project_valid_depth_only=True)
+
+            yellowPCD = o3d.geometry.PointCloud.create_from_depth_image(
+                depth=o3d.geometry.Image(yellowDepthImage),
+                intrinsic=self.real.pinholeInstrinsics,
+                depth_scale=1000.0,
+                depth_trunc=1000.0,
+                stride=1,
+                project_valid_depth_only=True)
+
+            bluePCD = o3d.geometry.PointCloud.create_from_depth_image(
+                depth=o3d.geometry.Image(blueDepthImage),
+                intrinsic=self.real.pinholeInstrinsics,
+                depth_scale=1000.0,  # FYI: previously this scale was set to 1
+                depth_trunc=1000.0,
+                stride=1,
+                project_valid_depth_only=True)  # TODO: try this line for both off and on with all PCDs
+
+            '''
+            # Downsample point cloud's based on realsense voxel_size parameter
+            redPCD = redPCD.voxel_down_sample(voxel_size=self.real.voxelSize)
+            yellowPCD = yellowPCD.voxel_down_sample(voxel_size=self.real.voxelSize)
+            bluePCD = bluePCD.voxel_down_sample(voxel_size=self.real.voxelSize)
+            '''
+            redPCD.paint_uniform_color([1, 0, 0])
+            yellowPCD.paint_uniform_color([1, 1, 0])
+            bluePCD.paint_uniform_color([0, 0, 1])
+
+            redBlock = bl.Block("redBlock", redPCD, image.pose)
+            yellowBlock = bl.Block("yellowBlock", yellowPCD, image.pose)
+            blueBlock = bl.Block("blueBlock", bluePCD, image.pose)
+
+            image_packets.append(ImagePacket(image, redPCD, yellowPCD, bluePCD, redBlock, yellowBlock, blueBlock))
+        return image_packets
+
     def getBlocksFromImages(self, images: List[TorchImage], display=False):
         # :colorImage 3-channel rgb image as numpy array
         # :depthImage 1-channel of measurements in z-axis as numpy array
@@ -73,106 +162,16 @@ class ObjectDetection():
         # Detects and segments classes using trained yolov8l-seg model
         # Inference step, only return instances with confidence > 0.6
 
-        chosen_image: TorchImage
-        chosen_model_result = None
+        image_packets: List[ImagePacket] = self.get_pcds_of_all_images(images)
 
-        for image in images:
-            pilImage = Image.fromarray(np.array(image.colorImage))
-            result = self.model.predict(pilImage, conf=0.6, save=True)[0]
+        # avg world frame coords for all blocks
+        for packet in image_packets:
+            coors = packet.get_all_block_world_coords()
 
-            if not chosen_model_result: # first iteration b/c initally falsy
-                chosen_model_result = result
-            else:
-                # is the model we just ran the best?
-                # yes -> set chosen image to image and chosen model result to result
-                # no -> move on
-                chosen_model_result = result # placeholder code 
-
-        redMask = self.getSegmentationMask(chosen_model_result, 'Red')
-        yellowMask = self.getSegmentationMask(chosen_model_result, 'Yellow')
-        blueMask = self.getSegmentationMask(chosen_model_result, 'Blue')
-
-        '''
-        if display:
-            print("Color Image")
-            plt.imshow(colorImage)
-            plt.show()
-            print("Red Mask")
-            plt.imshow(redMask * 255,cmap = 'gray')
-            plt.show()
-            print("Yellow Mask")
-            plt.imshow(yellowMask * 255,cmap = 'gray')
-            plt.show()
-            print("Blue Mask")
-            plt.imshow(blueMask * 255, cmap = 'gray')
-            plt.show()
-        '''
-        if display:
-            fig, ax = plt.subplots(2, 1)
-            print("Color Image and Depth Image")
-            ax[0].imshow(chosen_image.colorImage)
-            ax[0].set_title("Color Image")
-            ax[1].imshow(chosen_image.depthImage)
-            ax[1].set_title("Depth Image")
-            plt.show()
-
-            print("Masks")
-            fig, ax = plt.subplots(3, 1)
-            ax[0].imshow(redMask * 255, cmap='gray')
-            ax[0].set_title("Red Mask")
-            ax[1].imshow(yellowMask * 255, cmap='gray')
-            ax[1].set_title("Yellow Mask")
-            ax[2].imshow(blueMask * 255, cmap='gray')
-            ax[2].set_title("Blue Mask")
-            plt.show()
-
-        redDepthImage = np.multiply(chosen_image.depthImage, redMask.astype(int)).astype('float32')
-        yellowDepthImage = np.multiply(chosen_image.depthImage, yellowMask.astype(int)).astype('float32')
-        blueDepthImage = np.multiply(chosen_image.depthImage, blueMask.astype(int)).astype('float32')
-
-        # SEGMENT PCD INTO RED,YELLOW,BLUE BLOCKS
-        
-        redPCD = o3d.geometry.PointCloud.create_from_depth_image(
-            depth=o3d.geometry.Image(redDepthImage), 
-            intrinsic=self.real.pinholeInstrinsics, 
-            depth_scale=1000.0, 
-            depth_trunc=1000.0, 
-            stride=1, 
-            project_valid_depth_only=True)
-        
-        yellowPCD = o3d.geometry.PointCloud.create_from_depth_image(
-            depth=o3d.geometry.Image(yellowDepthImage), 
-            intrinsic=self.real.pinholeInstrinsics, 
-            depth_scale=1000.0, 
-            depth_trunc=1000.0, 
-            stride=1, 
-            project_valid_depth_only=True)
-        
-        bluePCD = o3d.geometry.PointCloud.create_from_depth_image(
-            depth=o3d.geometry.Image(blueDepthImage), 
-            intrinsic=self.real.pinholeInstrinsics, 
-            depth_scale=1000.0, # FYI: previously this scale was set to 1
-            depth_trunc=1000.0, 
-            stride=1, 
-            project_valid_depth_only=True) # TODO: try this line for both off and on with all PCDs
-        
-
-
-        '''
-        # Downsample point cloud's based on realsense voxel_size parameter
-        redPCD = redPCD.voxel_down_sample(voxel_size=self.real.voxelSize)
-        yellowPCD = yellowPCD.voxel_down_sample(voxel_size=self.real.voxelSize)
-        bluePCD = bluePCD.voxel_down_sample(voxel_size=self.real.voxelSize)
-        '''
-        redPCD.paint_uniform_color([1, 0, 0])
-        yellowPCD.paint_uniform_color([1, 1, 0])
-        bluePCD.paint_uniform_color([0, 0, 1])
 
         # o3d.visualization.draw([redPCD,yellowPCD,bluePCD])
         # o3d.visualization.draw_geometries([redPCD,yellowPCD,bluePCD])
-        redBlock = bl.Block("redBlock", redPCD, chosen_image.pose)
-        yellowBlock = bl.Block("yellowBlock", yellowPCD, chosen_image.pose)
-        blueBlock = bl.Block("blueBlock", bluePCD, chosen_image.pose)
+
         return (redBlock, yellowBlock, blueBlock)
         # return (redPCD,yellowPCD,bluePCD)
 

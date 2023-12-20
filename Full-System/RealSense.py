@@ -77,11 +77,12 @@ class RealSense():
             convert_rgb_to_intensity=False)
 
         if save:
+            # could be ./raw_images TODO: test this
             subFix = str(time.time())
-            np.save(f"depthImage{subFix}", rawRGBDImage.depth)
-            np.save(f"colorImage{subFix}", rawRGBDImage.color)
+            np.save(f"raw_images/depthImage{subFix}", rawRGBDImage.depth)
+            np.save(f"raw_images/colorImage{subFix}", rawRGBDImage.color)
             colorIM = Image.fromarray(rawColorImage)
-            colorIM.save(f"colorImage{subFix}.jpeg")
+            colorIM.save(f"raw_images/colorImage{subFix}.jpeg")
         return rawRGBDImage, rawDepthImage
 
     def getPCD(self, save=False):
@@ -93,7 +94,7 @@ class RealSense():
         rawRGBDImage, rawDepthImage = self.takeImages()
         pcd = o3d.geometry.PointCloud.create_from_depth_image(
             depth=o3d.geometry.Image(rawDepthImage),
-            intrinsic=self.pinholeInstrinsics, 
+            intrinsic=self.pinholeInstrinsics, # TODO: double check these intrinstics
             depth_scale=1, 
             depth_trunc=1, 
             stride=1, 

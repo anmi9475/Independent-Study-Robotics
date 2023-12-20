@@ -43,15 +43,17 @@ def get_pcd_at_multiple_positions(robot: ur.UR5_Interface, camera: real.RealSens
         pcd, rgbd = camera.getPCD()
         pcds.append(pcd)
         rgbds.append(ob.TorchImage(robot.getPose(), rgbd.color, rgbd.depth))
+        o3d.visualization.draw_geometries([pcd])
 
     o3d.visualization.draw_geometries(pcds)
 
     merged_point_cloud = o3d.geometry.PointCloud() # creates an empty pcd object
 
+    # TODO: Question 1. Is this even possible? If this is possible, we don't need code changes. I don't think this is possible
     for pc in pcds:
         merged_point_cloud += pc
 
-    return merged_point_cloud, rgbds
+    return pcds, rgbds
 
 
 try:

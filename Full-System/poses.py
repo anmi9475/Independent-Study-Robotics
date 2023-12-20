@@ -23,6 +23,7 @@ def pose_vec_to_mtrx(vec):
         [ 0 , 0 , 0 , 1]
     """
     x, y, z, rx, ry, rz = vec
+    # calculating theta AKA the rotation angle, to be used in the rodrigues() method
     theta = np.sqrt(np.square(rx) + np.square(ry) + np.square(rz))
     if theta == 0.0:
         theta = 1e-8
