@@ -10,9 +10,9 @@ class Block():
         self.blockPCD = pcd
         self.name = name
         # Removes outlier points by fitting block into largest cluster
-        self.clusterBlockPCD()
+        self.clusterBlockPCD() # denoises the pcd 
         self.blockAABB = self.blockPCD.get_axis_aligned_bounding_box()
-        self.blockOBB = self.blockPCD.get_oriented_bounding_box()
+        self.blockOBB = self.blockPCD.get_oriented_bounding_box(robust=True)
         self.blockAABB.color, self.blockOBB.color = [0, 0, 0], [0, 0, 0]
         self.urPose = urPose  # Pose of the Nth frame of the UR5 when the image was taken
         x, y = self.blockAABB.get_center()[0:2]
@@ -93,7 +93,8 @@ class Block():
     def getGraspPoint(self):
         # returns the (x,y,z) coordinates in either the world or camera coordinate frame of where the gripper should be placed (depending on if extrinsics were set when creating the PCD)
         # center of front-facing axis-aligned bounding box
-        x, y, z = self.blockAABB.get_center()[0:3]
+        # x, y, z = self.blockAABB.get_center()[0:3]
+        x, y, z = self.blockOBB.get_center()[0:3]
         # z = self.blockAABB.get_min_bound()[2]
         return (x, y, z)
 

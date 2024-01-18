@@ -51,17 +51,17 @@ try:
     for block in blocks:
         print(f"{block.name} - {list(block.gripperFrameCoords)}")
     
-    urPose = ur.getPose()
-    pcd,rgbdImage = detector.real.getPCD()
-    depthImage,colorImage = rgbdImage.depth,rgbdImage.color
-    blocks = detector.getBlocksFromImages(colorImage,depthImage,urPose,display = True)
+    # urPose = ur.getPose()
+    # pcd,rgbdImage = detector.real.getPCD()
+    # depthImage,colorImage = rgbdImage.depth,rgbdImage.color
+    # blocks = detector.getBlocksFromImages(colorImage,depthImage,urPose,display = True)
 
-    planner = tp.TaskPlanner(blocks)
-    goalDict = {"on":[("blueBlock","yellowBlock"),("redBlock", "yellowBlock")]}
-    steps = planner.generatePlan(goalDict)
-    print(steps)
-    for block in blocks:
-        print(f"{block.name} - {list(block.gripperFrameCoords)}")
+    # planner = tp.TaskPlanner(blocks)
+    # goalDict = {"on":[("blueBlock","yellowBlock"),("redBlock", "yellowBlock")]}
+    # steps = planner.generatePlan(goalDict)
+    # print(steps)
+    # for block in blocks:
+    #     print(f"{block.name} - {list(block.gripperFrameCoords)}")
     
     sleepRate = 0.75
     def projectToWorldCoords(gripperFrameCoords):
@@ -127,11 +127,18 @@ try:
     # ur.testRoutine()
     homePose = ur.getPose()
     i = 0
+    x_mod = 0.0
+    y_mod = 0.0
+    z_mod = 0.0    
     for step in steps:
         # Grasp and Move Home Step
         grabPos,releasePos = step
-        releasePos[1] = releasePos[1] + 0.02 + i
-        releasePos[2] = releasePos[2] + 0.00
+        # releasePos[1] = releasePos[1] + 0.02 + i
+        # releasePos[2] = releasePos[2] + 0.00
+        print("releasePos[1]: ", releasePos[1]) # 0.02654946393066391
+        print("releasePos[1] plus 2.5cm: ", releasePos[1] + 0.025) # 0.05154946393066391
+        releasePos[1] = releasePos[1] + 0.02 + y_mod
+        releasePos[2] = releasePos[2]
         print("This is the releasePos" , releasePos)
         print("This is the GrabPos" , grabPos)
         moveToBlock(grabPos) 
@@ -142,21 +149,9 @@ try:
         moveToBlock(releasePos)
         ur.openGripper()
         moveBackFromBlock(homePose)
-        i = i + .02
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+        # i = i + .02
+        y_mod += 0.02
+        z_mod -= 0.015
     
     gripperController.openGripper()
     gripperController.disconnect()

@@ -11,7 +11,7 @@ class RTB_Model():
     def __init__(self):
         # Model has units in meters
         self.ur5_DH = rtb.models.DH.UR5()  # URDF model
-        self.ur5_URDF = rtb.models.UR5()  # DH parameter-based model
+        self.ur5_URDF = rtb.models.URDF.UR5()  # DH parameter-based model
 
         homeJointAngles = np.array(np.radians([53, -112, 144, -27.5, 55, 171.7]))
         self.setJointAngles(homeJointAngles)
@@ -70,7 +70,8 @@ class RTB_Model():
     def getGripperPose(self):
         # Returns the pose (4 x 4 Homogenous Transform as SE3 Spatial Math Object) with position in the center between the 2 gripper links
         ur5 = self.ur5_DH
-        T_N = ur5.fkine_all(ur5.q)[-1]  # T_N - end-effector frame (before optoforce/gripper)
+        # T_N = ur5.fkine_all(ur5.q)[-1]  # T_N - end-effector frame (before optoforce/gripper)
+        T_N = ur5.G(ur5.q)[-1]
         d = 0.1125  # distance between end-effector frame origin and center of gripper frame along z-axis (m)
         T_G = T_N * SE3.Tz(d)
         return T_G
