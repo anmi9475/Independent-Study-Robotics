@@ -41,11 +41,11 @@ class ObjectDetection():
         # :className string corresponding to label in trained YOLO model
         # Here, className should be in {'Red','Yellow','Blue'}
         # Returns 1st instance of the class as binary numpy array and None if the class is not present
-        classList = list(np.array(result.boxes.cls))
+        classList = list(np.array((result.boxes.cls).cpu()))
         for i in range(0, len(classList)):
             predictedClassName = result.names[classList[i]]
             if predictedClassName == className:
-                mask = result.masks.data[i].numpy()  # (384,640)
+                mask = result.masks.data[i].cpu().numpy()  # (384,640)
                 # Resize mask to original imae size
                 scaledMask = cv2.resize(mask, (result.orig_shape[1], result.orig_shape[0]))
                 return scaledMask
