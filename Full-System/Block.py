@@ -18,7 +18,8 @@ class Block():
         x, y = self.blockAABB.get_center()[0:2]
         # due to convex hull outliers are included when mask is off. Use min bound rather than center
         zMin = self.blockAABB.get_min_bound()[2]
-        self.camFrameCoords = np.matrix([x, y, zMin])
+        # self.camFrameCoords = np.matrix([x, y, zMin])
+        self.camFrameCoords = np.matrix(self.blockOBB.get_center())
         self.gripperFrameCoords = self.getCenterInGripperFrame()
         self.worldFrameCoords = self.getCenterInWorld()  # Approximate coordinates in world frame
 
