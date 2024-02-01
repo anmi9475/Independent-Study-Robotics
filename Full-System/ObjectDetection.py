@@ -165,14 +165,23 @@ class ObjectDetection():
         image_packets: List[ImagePacket] = self.get_pcds_of_all_images(images)
 
         # avg world frame coords for all blocks
+        redBlock = []
+        yellowBlock = []
+        blueBlock = []
         for packet in image_packets:
-            coors = packet.get_all_block_world_coords()
+            coords = packet.get_all_block_world_coords() # returned as [red, yellow, blue]
+            redBlock.append(coords[0])
+            yellowBlock.append(coords[1])
+            blueBlock.append(coords[2])
 
+        redAvg = np.mean(redBlock, axis=0)
+        yellowAvg = np.mean(yellowBlock, axis=0)
+        blueAvg = np.mean(blueBlock, axis=0)
 
         # o3d.visualization.draw([redPCD,yellowPCD,bluePCD])
         # o3d.visualization.draw_geometries([redPCD,yellowPCD,bluePCD])
 
-        return (redBlock, yellowBlock, blueBlock)
+        return (redAvg, yellowAvg, blueAvg)
         # return (redPCD,yellowPCD,bluePCD)
 
     def displayWorld(self, worldPCD, blocks):
