@@ -81,7 +81,7 @@ class ObjectDetection():
         # :className string corresponding to label in trained YOLO model
         # Here, className should be in {'Red','Yellow','Blue'}
         # Returns 1st instance of the class as binary numpy array and None if the class is not present
-        classList = list(cpu().np.array(result.boxes.cls))
+        classList = list(np.array(result.boxes.cls.cpu()))
         for i in range(0, len(classList)):
             predictedClassName = result.names[classList[i]]
             if predictedClassName == className:
