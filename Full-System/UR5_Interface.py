@@ -46,7 +46,7 @@ class UR5_Interface():
         # Moves tool tip pose linearly in cartesian space to goal pose (requires tool pose to be configured)
         # tool pose defined relative to the end of the gripper when closed
         poseVector = self.poseMatrixToVector(poseMatrix)
-        self.c.moveL(poseVector, 0.25, 0.5, False)
+        self.c.moveL(poseVector, 0.25, 0.5, True)
 
     def moveStart(self):
         # Moves the arm linearly in cartesian space to home pose
@@ -55,12 +55,12 @@ class UR5_Interface():
                              [0.02424126, 0.99970114, 0.00316103, 0.05545535],
                              [0, 0, 0, 1]])
         # self.arm.move(target=homePose, move_type="l")
-        self.c.moveL(homePose, 0.25, 0.5, False)
+        self.c.moveL(homePose, 0.25, 0.5, True)
 
     def moveToPosition(self, position):
         # position is the numpy array similar to lines 53-56
         # vector = self.poseMatrixToVector(position)
-        self.c.moveL(position, 0.25, 0.5, False)
+        self.c.moveL(position, 0.25, 0.5, True)
 
 
     def openGripper(self):
